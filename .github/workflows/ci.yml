@@ -1,0 +1,44 @@
+name: Test and check live app
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  unit:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python -m pytest -q --ignore=tests/live
+
+  live:
+    name: Live checks on Render
+    needs: unit
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      LIVE_URL: https://asset-module1.onrender.com
+      LIVE_EXPECT_COMMIT: ${{ github.sha }}   # waits for Render to finish deploying this commit
+      LIVE_WAIT_SECONDS: "900"
+      APP_PASSWORD: ${{ secrets.APP_PASSWORD }}
+      LIVE_TEST_AI: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install openpyxl pytest
+      - run: python -m pytest -v tests/live -rs

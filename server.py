@@ -41,6 +41,12 @@ def cors(resp):
     return resp
 
 
+def deployed_commit() -> str:
+    """Git commit of the running deploy (set by Vercel / Render), for post-deploy checks."""
+    return (os.environ.get("VERCEL_GIT_COMMIT_SHA") or os.environ.get("RENDER_GIT_COMMIT")
+            or os.environ.get("GIT_COMMIT") or "unknown")
+
+
 def _password_ok() -> bool:
     expected = os.environ.get("APP_PASSWORD", "")
     if not expected:
@@ -51,13 +57,14 @@ def _password_ok() -> bool:
 @app.get("/")
 @app.get("/health")
 def health():
-    return jsonify({"ok": True, "service": "punctualiti-asset-module1"})
+    return jsonify({"ok": True, "service": "punctualiti-asset-module1", "commit": deployed_commit()})
 
 
 @app.get("/api/status")
 def status():
     return jsonify({"ai": ai.describe(), "ai_ready": ai.api_key_configured(),
-                    "password_required": bool(os.environ.get("APP_PASSWORD"))})
+                    "password_required": bool(os.environ.get("APP_PASSWORD")),
+                    "commit": deployed_commit()})
 
 
 @app.route("/api/asset/clean", methods=["POST", "OPTIONS"])

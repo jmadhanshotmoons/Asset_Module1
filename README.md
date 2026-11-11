@@ -121,6 +121,8 @@ tests/               pytest suite
 
 ## Tests
 
+**Live checks:** on every push to `main`, GitHub Actions runs the unit tests. It then waits until Render serves the pushed commit (`/api/status` reports it) and runs `tests/live` against https://asset-module1.onrender.com: health, status, password guard, a real clean of a made-up file, and one small AI call. The cleaning checks need the repo secret `APP_PASSWORD` (Settings → Secrets and variables → Actions). To run them locally: `LIVE_URL=https://asset-module1.onrender.com APP_PASSWORD=... python -m pytest tests/live`.
+
 ```bash
 python -m pytest -q
 ```
