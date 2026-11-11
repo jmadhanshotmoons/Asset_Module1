@@ -1,0 +1,10 @@
+{
+  "_comment": "Words that must keep this exact casing in names, categories, types and rooms. Matching is case-insensitive. Punctualiti to extend.",
+  "words": [
+    "ABC", "AC", "ACB", "ACS", "AHU", "AMF", "ATS", "BMS", "CCTV", "CFM", "CO2", "CT", "CW",
+    "DB", "DG", "DVR", "ELV", "ESB", "FAS", "FCU", "FHC", "GF", "HP", "HT", "HVAC", "IBMS",
+    "kVA", "KW", "LDB", "LED", "LGF", "LT", "MCB", "MCC", "MCCB", "MDB", "MLDB", "NVR", "PA",
+    "PAC", "PDB", "PHE", "PLC", "RMU", "RO", "SMDB", "STP", "TR", "TV", "UGF", "UPS", "UV",
+    "VAV", "VCB", "VFD", "VRF", "VRV", "WTP", "XLPE"
+  ]
+}

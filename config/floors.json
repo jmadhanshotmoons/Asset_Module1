@@ -1,0 +1,18 @@
+{
+  "_comment": "How free-text floors are recognised and the standard code they become. {n} is the floor number. Punctualiti to confirm the codes.",
+  "basement": {
+    "words": ["basement", "bsmt", "base", "bm", "b"],
+    "code": "BM{n}",
+    "bare_word_code": "BM1"
+  },
+  "numbered_floor": {
+    "words": ["floor", "flr", "f"],
+    "code": "{n}F"
+  },
+  "fixed": {
+    "LGF": ["lower ground floor", "lower ground", "lgf", "lg"],
+    "UGF": ["upper ground floor", "upper ground", "ugf", "ug"],
+    "GF": ["ground floor", "ground", "gf"],
+    "Terrace": ["terrace", "tarrace", "roof top", "rooftop", "roof"]
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "_comment": "Module 1 rules. Keys under allowed_values / header_synonyms are template column names without '*' or '(Max-...)'. OPEN: Punctualiti to confirm the allowed values.",
+  "name_number_width": 2,
+  "allowed_values": {
+    "Status": ["Working", "Not Working"],
+    "Critical": ["Yes", "No"],
+    "Service Type": ["Technical Services", "Soft Services", "Security Services"],
+    "Maintenance Policy": ["Schedule Planned", "Breakdown"],
+    "Warranty Applicable": ["Yes", "No"]
+  },
+  "header_synonyms": {
+    "Asset Name": ["equipment name", "equipment", "asset", "name of asset", "description of equipment", "asset description"],
+    "Building": ["tower", "block", "building name"],
+    "Floor": ["level", "floor name"],
+    "Room": ["location", "area", "room name", "location details"],
+    "Make": ["brand", "manufacturer", "make name"],
+    "Serial No.": ["serial number", "serial no", "sl no of equipment"],
+    "Capacity": ["rating", "size"],
+    "UOM": ["unit", "units", "unit of measurement"],
+    "Asset Type": ["type", "equipment type"],
+    "Service Type": ["service"],
+    "Critical": ["criticality", "critical asset"]
+  },
+  "value_corrections": {
+    "_comment": "Known client typos. Applied to Category, Subcategory and Asset Type, always highlighted for review.",
+    "Camear": "Camera"
+  },
+  "empty_markers": ["", "-", "--", "na", "n/a", "n.a", "nil", "none", "null"]
+}

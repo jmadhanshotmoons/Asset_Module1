@@ -1,0 +1,20 @@
+{
+  "_comment": "Unit spellings (lowercase, no spaces) mapped to the standard UOM.",
+  "units": {
+    "kw": "KW", "kws": "KW", "kilowatt": "KW",
+    "w": "W", "watt": "W", "watts": "W",
+    "hp": "HP",
+    "kva": "kVA",
+    "tr": "TR", "ton": "TR", "tons": "TR",
+    "cfm": "CFM",
+    "a": "AMP", "amp": "AMP", "amps": "AMP", "ampere": "AMP",
+    "v": "V", "volt": "V", "volts": "V",
+    "kg": "KG", "kgs": "KG",
+    "l": "Liter", "ltr": "Liter", "liter": "Liter", "liters": "Liter", "litre": "Liter", "litres": "Liter",
+    "kl": "KL",
+    "ah": "AH",
+    "m3/hr": "m3/hr", "cmh": "m3/hr",
+    "lpm": "LPM", "gpm": "GPM",
+    "loop": "Loop", "loops": "Loop"
+  }
+}

@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+*.env
+samples/
+output/
+*.xlsx
+!punctualiti/data/*.xlsx
+~$*.xlsx
+.pytest_cache/
