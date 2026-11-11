@@ -30,6 +30,32 @@ print(result.rows, result.red_cells, result.amber_cells, result.ai_status)
 
 `CleanResult` also carries `column_report` (how each template column was matched), `unmapped_columns`, `issue_summary` and `warnings`, for a UI to display.
 
+## Run as a web API (e.g. Render)
+
+`server.py` exposes the cleaner over HTTP. It is an API only, with no web page.
+
+| Method | Path | Does |
+|---|---|---|
+| GET | `/health` | Health check: `{"ok": true}` |
+| GET | `/api/status` | Active AI provider, and whether a password is required |
+| POST | `/api/asset/clean` | Form field `file` = client `.xlsx` (optional `template`, `use_ai=1/0`). Returns the cleaned, highlighted `.xlsx` with headers `X-Rows`, `X-Red-Cells` and `X-Amber-Cells`. Add `?format=json` for a JSON summary with the file in base64. |
+
+If `APP_PASSWORD` is set, send it in the `X-App-Password` header. Example:
+
+```bash
+curl -H "X-App-Password: $APP_PASSWORD" -F "file=@Asset list.xlsx" \
+     https://<your-service>.onrender.com/api/asset/clean -o cleaned.xlsx
+```
+
+**Render settings:**
+- Language: Python 3 (pinned to 3.12 by `.python-version`)
+- Build command: `pip install -r requirements.txt`
+- Start command: `gunicorn server:app --workers 1 --threads 4 --timeout 180`
+- Health check path: `/health`
+- Environment variables: `APP_PASSWORD`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION` (or `ANTHROPIC_API_KEY`). Optional: `PUNCTUALITI_BEDROCK_MODEL`, and `CORS_ORIGIN` if a separate web page calls this API.
+
+The free plan sleeps when idle, so the first request after a pause takes about 30–60 s.
+
 ## What it does
 
 1. **Structure check.** Finds the header row (even below title rows) and the best-matching sheet, then maps client columns to template columns: exact name, then synonyms (`config/asset_rules.json`), then close spellings. Synonym and close-spelling matches are amber on the header. Missing required columns are red on the header. Output always uses the exact template layout.
@@ -88,6 +114,7 @@ punctualiti/
   units.py           capacity + UOM split
   ai.py              Claude fallback
   config.py, env.py  config + .env loading
+server.py            HTTP API (gunicorn server:app)
 config/              editable rules (JSON)
 tests/               pytest suite
 ```
