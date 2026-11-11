@@ -69,7 +69,11 @@ ANTHROPIC_API_KEY=...
 
 Real environment variables override `.env`. If both are set, the Claude API is used unless `PUNCTUALITI_AI_PROVIDER=bedrock`. On Bedrock, the IAM user needs `bedrock:InvokeModel` and the Claude model must be enabled under Bedrock **Model access**.
 
-Credentials are never stored in code. Only rows with a missing Category, Subcategory or Asset Type are sent, in batches of 60, using `claude-opus-5-5` (`anthropic.claude-opus-5-5` on Bedrock; override with `PUNCTUALITI_AI_MODEL`) with low effort and structured JSON output. On the Claude API the server-side refusal fallback is also on (Bedrock doesn't offer it). Any AI error leaves those cells red with the reason, and the rest of the file is still cleaned.
+Models:
+- **Bedrock:** `PUNCTUALITI_BEDROCK_MODEL`, an inference profile. It defaults to `global.anthropic.claude-opus-4-6-v1`, the most capable Claude model enabled on Punctualiti's AWS account as of Nov 2026. After enabling Opus 5.5 under Bedrock *Model access*, set it to `global.anthropic.claude-opus-5-5`.
+- **Claude API:** `PUNCTUALITI_AI_MODEL`, default `claude-opus-5-5`, with the server-side refusal fallback on.
+
+Credentials are never stored in code. Only rows with a missing Category, Subcategory or Asset Type are sent, in batches of 60, with structured JSON output. Any AI error leaves those cells red with the reason, and the rest of the file is still cleaned.
 
 ## Layout
 

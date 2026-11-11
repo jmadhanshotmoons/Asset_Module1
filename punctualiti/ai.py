@@ -10,6 +10,11 @@ are never stored in code. Two ways to reach Claude:
 
 PUNCTUALITI_AI_PROVIDER=anthropic|bedrock forces one; otherwise the Claude API key wins if both
 are set. With no credentials nothing is sent and the gaps stay red.
+
+Models: PUNCTUALITI_AI_MODEL (Claude API, default claude-opus-5-5) and PUNCTUALITI_BEDROCK_MODEL
+(Bedrock inference profile, default global.anthropic.claude-opus-4-6-v1, the most capable model
+enabled on Punctualiti's AWS account as of Nov 2026; switch to global.anthropic.claude-opus-5-5
+once it is enabled under Bedrock "Model access").
 """
 from __future__ import annotations
 
@@ -19,6 +24,7 @@ from dataclasses import dataclass
 
 ANTHROPIC, BEDROCK = "anthropic", "bedrock"
 DEFAULT_MODEL = "claude-opus-5-5"
+DEFAULT_BEDROCK_MODEL = "global.anthropic.claude-opus-4-6-v1"
 BATCH_SIZE = 60
 
 _SCHEMA = {
@@ -99,17 +105,18 @@ def _region() -> str:
 
 
 def _model(p: str) -> str:
-    model = os.environ.get("PUNCTUALITI_AI_MODEL", DEFAULT_MODEL)
-    if p == BEDROCK and not model.startswith(("anthropic.", "arn:", "us.", "eu.", "apac.", "global.")):
-        model = f"anthropic.{model}"  # Bedrock model IDs carry the 'anthropic.' prefix
-    return model
+    if p == BEDROCK:
+        return os.environ.get("PUNCTUALITI_BEDROCK_MODEL") or DEFAULT_BEDROCK_MODEL
+    return os.environ.get("PUNCTUALITI_AI_MODEL") or DEFAULT_MODEL
 
 
 def _client(p: str):
     import anthropic
 
     if p == BEDROCK:
-        return anthropic.AnthropicBedrockMantle(
+        # Bedrock runtime (InvokeModel) client: it accepts the cross-region inference
+        # profiles (global./us.) this account is enabled for.
+        return anthropic.AnthropicBedrock(
             aws_access_key=os.environ["AWS_ACCESS_KEY_ID"],
             aws_secret_key=os.environ["AWS_SECRET_ACCESS_KEY"],
             aws_session_token=os.environ.get("AWS_SESSION_TOKEN") or None,
@@ -119,10 +126,14 @@ def _client(p: str):
 
 
 def _request(client, p: str, payload: str):
+    model = _model(p)
+    output_config = {"format": {"type": "json_schema", "schema": _SCHEMA}}
+    if "haiku-4-5" not in model:  # Haiku 4.5 rejects the effort setting
+        output_config["effort"] = "low"
     params = dict(
-        model=_model(p),
+        model=model,
         max_tokens=16000,
-        output_config={"effort": "low", "format": {"type": "json_schema", "schema": _SCHEMA}},
+        output_config=output_config,
         system=_INSTRUCTIONS,
         messages=[{"role": "user", "content": payload}],
     )

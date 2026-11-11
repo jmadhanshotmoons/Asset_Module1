@@ -103,7 +103,7 @@ def test_renamed_column_is_matched_and_flagged():
 
 def test_provider_selection(monkeypatch):
     for var in ("ANTHROPIC_API_KEY", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY",
-                "PUNCTUALITI_AI_PROVIDER", "PUNCTUALITI_AI_MODEL", "AWS_REGION", "AWS_DEFAULT_REGION"):
+                "PUNCTUALITI_AI_PROVIDER", "PUNCTUALITI_AI_MODEL", "PUNCTUALITI_BEDROCK_MODEL", "AWS_REGION", "AWS_DEFAULT_REGION"):
         monkeypatch.delenv(var, raising=False)
     assert ai.provider() is None
 
@@ -111,7 +111,9 @@ def test_provider_selection(monkeypatch):
     monkeypatch.setenv("AWS_SECRET_ACCESS_KEY", "test-secret")
     monkeypatch.setenv("AWS_REGION", "ap-south-1")
     assert ai.provider() == ai.BEDROCK
-    assert ai._model(ai.BEDROCK) == "anthropic.claude-opus-5-5"
+    assert ai._model(ai.BEDROCK) == "global.anthropic.claude-opus-4-6-v1"
+    monkeypatch.setenv("PUNCTUALITI_BEDROCK_MODEL", "global.anthropic.claude-opus-5-5")
+    assert ai._model(ai.BEDROCK) == "global.anthropic.claude-opus-5-5"
     assert "ap-south-1" in ai.describe() and "test-secret" not in ai.describe()
     ai._client(ai.BEDROCK)  # builds offline, no request sent
 
