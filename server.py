@@ -12,13 +12,12 @@ If APP_PASSWORD is set, send it in the X-App-Password header.
 from __future__ import annotations
 
 import base64
-import hmac
 import io
 import os
 
 from flask import Flask, jsonify, request, send_file
 
-from punctualiti import ai
+from punctualiti import access, ai
 from punctualiti.asset import clean_asset_file
 from punctualiti.asset.cleaner import output_name
 from punctualiti.env import load_dotenv
@@ -47,11 +46,6 @@ def deployed_commit() -> str:
             or os.environ.get("GIT_COMMIT") or "unknown")
 
 
-def _password_ok() -> bool:
-    expected = os.environ.get("APP_PASSWORD", "")
-    if not expected:
-        return True
-    return hmac.compare_digest(request.headers.get("X-App-Password", "").encode(), expected.encode())
 
 
 @app.get("/")
@@ -71,8 +65,9 @@ def status():
 def clean():
     if request.method == "OPTIONS":
         return ("", 204)
-    if not _password_ok():
-        return jsonify({"error": "Wrong or missing X-App-Password."}), 401
+    gate = access.check(request.headers.get("X-App-Password", ""))
+    if not gate.ok:
+        return jsonify({"error": gate.message}), 401
     upload = request.files.get("file")
     if not upload or not upload.filename:
         return jsonify({"error": "Send the client's asset list as form field 'file' (.xlsx)."}), 400

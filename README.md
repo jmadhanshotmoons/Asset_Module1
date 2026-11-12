@@ -40,7 +40,9 @@ print(result.rows, result.red_cells, result.amber_cells, result.ai_status)
 | GET | `/api/status` | Active AI provider, and whether a password is required |
 | POST | `/api/asset/clean` | Form field `file` = client `.xlsx` (optional `template`, `use_ai=1/0`). Returns the cleaned, highlighted `.xlsx` with headers `X-Rows`, `X-Red-Cells` and `X-Amber-Cells`. Add `?format=json` for a JSON summary with the file in base64. |
 
-If `APP_PASSWORD` is set, send it in the `X-App-Password` header. Example:
+If `APP_PASSWORD` is set, send it (or a trial password) in the `X-App-Password` header.
+
+**Trial passwords (auto-expire):** `python -m punctualiti.access --hours 24` prints a password like `trial-202611131930-3fa9c2d1e7` that works until the time built into it (India time) and is then refused automatically. Nothing is configured on the server; it is signed with `APP_PASSWORD`, so it can't be edited to last longer, and changing `APP_PASSWORD` cancels all trials. Example:
 
 ```bash
 curl -H "X-App-Password: $APP_PASSWORD" -F "file=@Asset list.xlsx" \
