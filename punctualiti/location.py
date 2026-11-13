@@ -98,10 +98,14 @@ def split_location(building: str, floor: str, room: str) -> Location:
     Cases, in order:
       1. Floor text contains one floor   -> use it; leftover text becomes Room if Room is empty,
                                            repeats the Floor text, or is itself only a floor.
-      2. Only Room text contains a floor -> columns look swapped; swap and flag amber.
-      3. No floor anywhere              -> keep the text, flag red.
+      2. No Floor value, Room text has one -> a single combined location column
+                                           ('CW-B1-LT room'); split it like case 1, no flag.
+      3. Only Room text contains a floor -> columns look swapped; swap and flag amber.
+      4. No floor anywhere              -> keep the text, flag red.
     """
     floor, room = clean_spaces(floor), clean_spaces(room)
+    if not floor and room and find_floors(room):
+        return split_location(building, room, "")
     in_floor, in_room = find_floors(floor), find_floors(room)
 
     if len({m.code for m in in_floor}) > 1:

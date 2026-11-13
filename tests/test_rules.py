@@ -64,6 +64,14 @@ def test_location_spec_examples():
     assert (loc.floor, loc.room) == ("BM1", "LT Room")
 
 
+def test_location_single_combined_column():
+    # Client has only a 'Location' column (mapped to Room) and no Floor/Building values.
+    loc = split_location("", "", "CW-B1-LT room")
+    assert (loc.building, loc.floor, loc.room, loc.floor_level) == ("CW", "BM1", "LT Room", None)
+    loc = split_location("Tower 2", "", "GF, Reception")
+    assert (loc.building, loc.floor, loc.room, loc.floor_level) == ("Tower 2", "GF", "Reception", None)
+
+
 def test_location_repeated_text():
     loc = split_location("Tower 1", "Pump Room, Basement 2", "Pump Room, Basement 2")
     assert (loc.floor, loc.room, loc.floor_level) == ("BM2", "Pump Room", None)
